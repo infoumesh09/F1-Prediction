@@ -355,6 +355,10 @@ class F1ChampionshipPredictor:
         
         # Get predictions from ensemble model
         probabilities = self.ensemble_model.predict_proba(X_pred)[:, 1]
+        probability_total = probabilities.sum()
+        if probability_total <= 0:
+            raise ValueError("Model returned no positive championship probability")
+        probabilities = probabilities / probability_total
         
         # Create results DataFrame
         results_df = season_data[['driver_name', 'constructor_name']].copy()
@@ -366,28 +370,69 @@ class F1ChampionshipPredictor:
         
         return results_df
     
-    def predict_champion_probabilities_with_history(self, combined_data: pd.DataFrame) -> pd.DataFrame:
-        """Predict championship probabilities for 2025 drivers using historical data for context"""
+    def predict_champion_probabilities_with_history(self, combined_data: pd.DataFrame, prediction_year: int = 2025) -> pd.DataFrame:
+        """Predict championship probabilities for drivers in prediction_year using historical data for context"""
         
         if not self.is_trained:
             raise ValueError("Model must be trained before making predictions")
         
-        # Feature engineering using the full dataset (historical + 2025)
+        # Feature engineering using the full dataset (historical + prediction year)
         features_df = self.feature_engineer.create_features(combined_data)
         
-        # Prepare prediction data (this will filter to 2025 only)
+        # Prepare prediction data (this will filter to prediction_year only)
         X_pred = self.feature_engineer.prepare_prediction_data(features_df)
         
-        # Get 2025 driver data for results
-        season_2025_data = combined_data[combined_data['year'] == 2025]
+        # Get prediction year driver data for results
+        season_data = combined_data[combined_data['year'] == prediction_year]
         
-        # Get predictions from ensemble model
+# Get predictions from ensemble model
         if self.ensemble_model is None:
             raise ValueError("Ensemble model is not available")
         probabilities = self.ensemble_model.predict_proba(X_pred)[:, 1]
+
+        # ── Standings-driven correction (Option C) ─────────────────────────
+        # The raw ensemble probabilities are near-noise for every driver but
+        # the current leader (tiny 70-row training set, extreme class
+        # imbalance), so they can rank e.g. a 0-point Aston Martin pair above
+        # front-runners.  Two fixes applied here:
+        #   1) Points-prior blend: anchor a softmax prior on current points
+        #      and blend it with the model output so standings dominate.
+        #   2) Monotonic re-rank: a driver with more points can never have a
+        #      lower probability than a driver with fewer points.
+        points = (
+            season_data["final_points"].astype(float)
+            if "final_points" in season_data.columns
+            else season_data.get(
+                "current_points",
+                pd.Series(0.0, index=season_data.index),
+            ).astype(float)
+        ).to_numpy()
+
+        max_pts = float(np.max(points)) if len(points) else 1.0
+        temperature = max_pts / 4.0
+        prior = np.exp((points - max_pts) / temperature)
+        prior = prior / (prior.sum() or 1.0)
+
+        MODEL_WEIGHT = 0.35
+        blended = np.power(np.clip(probabilities, 1e-12, None), MODEL_WEIGHT) * np.power(
+            prior, 1.0 - MODEL_WEIGHT
+        )
+
+        order = np.argsort(-points, kind="stable")
+        mono = blended[order].copy()
+        for i in range(1, len(mono)):
+            if mono[i] > mono[i - 1]:
+                mono[i] = mono[i - 1]
+        blended = np.empty_like(mono)
+        blended[order] = mono
+
+        probability_total = blended.sum()
+        if probability_total <= 0:
+            raise ValueError("Model returned no positive championship probability")
+        probabilities = blended / probability_total
         
         # Create results DataFrame
-        results_df = season_2025_data[['driver_name', 'constructor_name']].copy().reset_index(drop=True)
+        results_df = season_data[['driver_name', 'constructor_name']].copy().reset_index(drop=True)
         results_df['championship_probability'] = probabilities
         results_df['predicted_champion'] = (probabilities == probabilities.max())
         

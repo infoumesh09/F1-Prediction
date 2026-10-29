@@ -1,288 +1,287 @@
-# 🏎️ F1 2025 Championship Prediction Model
+# F1 2026 Championship Prediction Model
 
-A comprehensive machine learning system to predict the Formula 1 2025 World Championship winner using historical race data, driver performance metrics, and advanced feature engineering.
+A machine learning system with **two complementary prediction engines**:
+
+1. **Championship Predictor** — predicts the 2026 World Championship winner using season-level standings and a 7-model ensemble
+2. **Next Race Predictor** — predicts the finishing order for the next race using FastF1 telemetry (FP1/FP2/FP3/Qualifying), rolling driver form, and a Ridge regression model
+
+> **Season status (last data update):** Round 13 of 24 — Italy GP completed.
+> Andrea Kimi Antonelli leads with 241 pts. 11 races remain, 275 maximum points still on offer.
 
 <img width="1406" height="617" alt="image" src="https://github.com/user-attachments/assets/dbac2c2c-72cf-42db-88a1-3ec8a7e9bb38" />
 
 ## 🎯 Project Overview
 
-This project uses historical F1 data from 2010-2024 to train multiple machine learning models that predict championship probabilities for the 2025 F1 season. The system combines data collection, feature engineering, model training, and prediction visualization in a complete ML pipeline.
+This project uses historical F1 championship data from 2020–2025 to train a multi-model ensemble that predicts championship probabilities for every driver on the 2026 grid. The pipeline covers data collection, feature engineering, model training, prediction, and visualisation.
+
+The 2026 season features a heavily revised grid:
+- **New teams**: Audi (née Sauber) and Cadillac make their constructor debuts
+- **New drivers**: Antonelli (Mercedes), Hadjar (Red Bull), Lindblad (Racing Bulls), Bearman (Haas), Colapinto (Alpine), Bortoleto (Audi)
+- **Notable moves**: Hamilton → Ferrari, Sainz → Williams, Albon → Williams
 
 ## 📸 Visual Previews
 
-Below are a few auto-generated visuals saved under `assets/` to give a quick feel for the outputs. Regenerate them anytime with:
+Regenerate all images any time with:
 
 ```bash
-# optional: from repo root
 python scripts/generate_readme_images.py
 ```
 
 ### Top 10 Predicted Contenders
-
 ![Top 10 Predicted Contenders](assets/top10_probabilities.png)
 
-### Model vs Calibrated Probabilities
+### Current 2026 Standings (after Round 13)
+![2026 Current Standings Top 12](assets/current_standings_top12.png)
 
+### Model vs Calibrated Probabilities
 ![Model vs Calibrated Probabilities](assets/calibrated_vs_model_top10.png)
 
-### Current 2025 Standings (snapshot)
+### Head-to-head Swing Heatmap
+Points swing between the current top two for a single race outcome, with all other races held neutral.
 
-![2025 Current Standings Top 12](assets/current_standings_top12.png)
-
-### Head-to-head swing (Race 1 heatmap)
-
-This heatmap shows how a single race outcome (Race 1), with other races held neutral, swings the points difference between the current top two.
-
-![H2H Race 1 Heatmap](assets/h2h_swing_heatmap_race1.png)
+![H2H Swing Heatmap](assets/h2h_swing_heatmap_race1.png)
 
 ### Model minus Monte Carlo (Top 10)
-
-Compares the model’s probability vs a simple Monte Carlo based on points-per-race skill. Positive bars mean the model is higher than MC.
+Positive bars = model assigns higher probability than a skill-weighted Monte Carlo simulation.
 
 ![Model minus MC (Top 10)](assets/model_minus_mc_top10.png)
 
 ## ✨ Features
 
-- **Automated Data Collection**: Fetches historical F1 data from the Ergast API
-- **Advanced Feature Engineering**: Creates 30+ meaningful features from raw F1 data
-- **Multiple ML Algorithms**: Ensemble of 7 different algorithms for robust predictions
-- **Comprehensive Evaluation**: Detailed model performance analysis and visualization
-- **2025 Season Predictions**: Ready-to-use interface for championship predictions
-- **Interactive Reports**: Detailed prediction reports with insights and analysis
+- **Static CSV data pipeline** — no live API calls needed at runtime; data sourced from `data/f1_championship_data.csv` (2020-2025) and `data/f1_2026_grid.csv`
+- **FastF1 compatible** — `fastf1` is included in requirements for optional live data enrichment following the same method used in `F1-2026-Prediction-main`
+- **Advanced Feature Engineering** — 30+ features including win rate, podium rate, reliability, team strength, and prior-year lagged performance
+- **7-model Ensemble** — Random Forest, XGBoost, LightGBM, SVM, Logistic Regression, Neural Network, Gradient Boosting combined via soft VotingClassifier
+- **Season-aware predictions** — grid data includes current points, wins, and podiums; report flags mathematically eliminated drivers and quantifies points remaining
+- **Monte Carlo simulation** — 3 000-run skill-weighted MC over remaining races for cross-validation against model probabilities
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- Internet connection (for data collection)
+- Python 3.8+
 
 ### Installation
 
-1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd F1-2025-ML-Champion-Predictor
+pip install -r requirements.txt
+```
 
-   ```bash
-   git clone <repository-url>
-   cd MLF1
-   ```
+### Run the prediction
 
-2. **Install dependencies**
+```bash
+cd src
+python f1_2026_predictor.py
+```
 
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Run the prediction system**
-
-   ```bash
-   cd src
-   python f1_2025_predictor.py
-   ```
+Results are written to `results/f1_2026_championship_predictions.csv` and `results/f1_2026_prediction_report.txt`.
 
 ## 📊 Project Structure
 
 ```text
-MLF1/
-├── src/                          # Source code
-│   ├── data_collector.py         # F1 data collection from Ergast API
-│   ├── feature_engineering.py    # Feature creation and preprocessing
-│   ├── ml_model.py              # Machine learning models and training
-│   ├── model_evaluator.py       # Model evaluation and visualization
-│   └── f1_2025_predictor.py     # Main prediction interface
-├── data/                        # Raw and processed data
-├── models/                      # Trained ML models
-├── results/                     # Prediction outputs and reports
-├── notebooks/                   # Jupyter notebooks (for analysis)
-├── requirements.txt             # Python dependencies
-└── README.md                    # This file
+F1-2025-ML-Champion-Predictor/
+├── src/
+│   ├── data_collector.py              # Loads f1_championship_data.csv
+│   ├── feature_engineering_simple.py  # Feature creation (year filters → 2026)
+│   ├── ml_model.py                    # 7-model ensemble + VotingClassifier
+│   ├── model_evaluator.py             # Evaluation metrics and plots
+│   ├── f1_2026_predictor.py           # Main 2026 prediction interface  ← run this
+│   └── f1_2025_predictor.py           # Legacy 2025 interface (kept for reference)
+├── data/
+│   ├── f1_championship_data.csv       # Historical standings 2020–2025
+│   └── f1_2026_grid.csv               # 2026 driver grid + current season stats
+├── models/
+│   └── f1_championship_predictor_2026.joblib   # Saved ensemble model
+├── results/
+│   ├── f1_2026_championship_predictions.csv
+│   └── f1_2026_prediction_report.txt
+├── scripts/
+│   ├── generate_readme_images.py      # Regenerates all assets/ PNGs
+│   └── update_2026_standings.py       # Incremental FastF1 data updater ← NEW!
+├── assets/                            # Auto-generated visualisation PNGs
+├── notebooks/
+│   └── f1_2025_prediction.ipynb       # Exploratory notebook
+├── requirements.txt
+└── README.md
 ```
 
-## 🔧 Usage Examples
+## 🔧 Usage
 
-### Basic Prediction
+### Basic prediction pipeline
 
 ```python
-from src.f1_2025_predictor import F12025Predictor
+from src.f1_2026_predictor import F12026Predictor
 
-# Initialize predictor
-predictor = F12025Predictor()
-
-# Run full pipeline
-predictions_df, report = predictor.run_full_prediction_pipeline()
-
-# View top contenders
+predictor = F12026Predictor()
+predictions_df, report = predictor.run_full_prediction_pipeline(retrain_model=True)
 print(predictions_df.head())
 ```
 
-### Custom Model Training
+### Load a pre-trained model (faster, no retraining)
+
+```python
+predictor = F12026Predictor()
+predictions_df, report = predictor.run_full_prediction_pipeline(retrain_model=False)
+```
+
+### Custom training
 
 ```python
 from src.ml_model import F1ChampionshipPredictor
 from src.data_collector import F1DataCollector
 
-# Collect data
 collector = F1DataCollector()
-df = collector.get_seasons_data(2015, 2024)
+df = collector.get_seasons_data(2020, 2025)
 
-# Train model
-predictor = F1ChampionshipPredictor()
-results = predictor.train(df, optimize_hyperparameters=True)
-
-# Make predictions
-predictions = predictor.predict_champion_probabilities(season_data)
-```
-
-### Model Evaluation
-
-```python
-from src.model_evaluator import F1ModelEvaluator
-
-# Initialize evaluator
-evaluator = F1ModelEvaluator()
-
-# Generate performance report
-report = evaluator.generate_evaluation_report(test_results)
-print(report)
-
-# Plot model comparison
-comparison_df = evaluator.compare_models(model_results)
-evaluator.plot_model_comparison(comparison_df)
+model = F1ChampionshipPredictor()
+results = model.train(df, optimize_hyperparameters=True)
 ```
 
 ## 🤖 Machine Learning Models
 
-The system uses an ensemble of 7 different algorithms:
+The ensemble combines 7 classifiers, each handling class imbalance (≈1 champion per 20 drivers):
 
-1. **Random Forest** - Tree-based ensemble for robust predictions
-2. **XGBoost** - Gradient boosting for high performance
-3. **LightGBM** - Fast gradient boosting implementation
-4. **Support Vector Machine** - Non-linear classification
-5. **Logistic Regression** - Linear baseline model
-6. **Neural Network** - Multi-layer perceptron
-7. **Gradient Boosting** - Traditional gradient boosting
+| Model | Class balance handling |
+|---|---|
+| Random Forest | `class_weight='balanced'` |
+| XGBoost | `scale_pos_weight=10` |
+| LightGBM | `class_weight='balanced'` |
+| SVM (RBF) | `class_weight='balanced'` |
+| Logistic Regression | `class_weight='balanced'` |
+| Neural Network (MLP) | early stopping |
+| Gradient Boosting | — |
 
-The final prediction uses a **Voting Classifier** ensemble that combines the top-performing models.
+Top 5 models by 3-fold F1 CV score are combined into a **soft VotingClassifier**.
 
 ## 📈 Features Engineered
 
-The system creates 30+ features across several categories:
+30+ features across five categories:
 
-### Performance Features
+**Performance** — win rate, podium rate, points-per-race, fastest-laps rate  
+**Relative** — driver's share of constructor points and wins, grid→finish improvement, position consistency  
+**Reliability** — completion rate, DNF penalty  
+**Team** — constructor points (normalised), top-3 constructor flag  
+**Historical** — previous year position/points/wins (lagged), driver experience (years in data)
 
-- Points per race
-- Win rate and podium rate
-- Grid position to finish improvement
-- Race craft score (consistency + speed)
+## 🏆 2026 Season Context
 
-### Historical Features
+| Driver | Team | Pts (R13) | Wins |
+|---|---|---|---|
+| Andrea Kimi Antonelli | Mercedes | 242 | 3 |
+| George Russell | Mercedes | 183 | 1 |
+| Lewis Hamilton | Ferrari | 183 | 1 |
+| Lando Norris | McLaren | 159 | 2 |
+| Charles Leclerc | Ferrari | 155 | 1 |
+| Max Verstappen | Red Bull Racing | 112 | 1 |
+| Oscar Piastri | McLaren | 104 | 1 |
+| Isack Hadjar | Red Bull Racing | 68 | 0 |
+| Liam Lawson | Racing Bulls | 49 | 0 |
+| Pierre Gasly | Alpine | 44 | 0 |
 
-- Previous year performance
-- Career progression trends
-- Rolling averages (3-year window)
-- Peak performance metrics
+*Points standings after Round 13 — Italy GP (data sourced from F1-2026-Prediction-main)*
 
-### Relative Features
-
-- Season rankings and percentiles
-- Gap to championship leader
-- Points concentration analysis
-
-### Team Features
-
-- Constructor performance
-- Driver's contribution to team
-- Team competitiveness trends
-
-### Consistency Features
-
-- Reliability scores
-- Performance consistency metrics
-- Championship contention factors
-
-## 📋 Model Performance
-
-The ensemble model achieves the following performance on historical data:
-
-- **Accuracy**: ~85% in predicting championship winners
-- **Top-3 Accuracy**: ~92% in identifying podium finishers
-- **F1-Score**: 0.75+ for championship classification
-- **AUC-ROC**: 0.85+ for probability predictions
-
-## 🏆 2025 Season Predictions
-
-The model provides:
-
-- **Championship probabilities** for all 20 drivers
-- **Confidence levels** (Low/Medium/High/Very High)
-- **Betting odds equivalent** for each driver
-- **Constructor championship outlook**
-- **Detailed prediction report** with insights
-
-### Sample Output
+### Sample prediction output
 
 ```text
-TOP 5 CHAMPIONSHIP CONTENDERS
-1. Lando Norris (McLaren)        - 52.0% (Odds: 1.0/1)
-2. Oscar Piastri (McLaren)       - 48.0% (Odds: 1.1/1)
-3. Max Verstappen (Red Bull)     - 15.2% (Odds: 5.6/1)
-4. George Russell (Mercedes)     - 8.4%  (Odds: 11.0/1)
-5. Charles Leclerc (Ferrari)     - 6.1%  (Odds: 15.4/1)
+TOP 10 CHAMPIONSHIP CONTENDERS
+ 1. Andrea Kimi Antonelli  (Mercedes       )  38.50%  Odds:   2.6/1  Pts: 242  Still alive: ✓
+ 2. George Russell         (Mercedes       )  22.10%  Odds:   4.5/1  Pts: 183  Still alive: ✓
+ 3. Lewis Hamilton         (Ferrari        )  14.80%  Odds:   6.8/1  Pts: 183  Still alive: ✓
+ 4. Lando Norris           (McLaren        )   9.20%  Odds:  10.9/1  Pts: 159  Still alive: ✓
+ 5. Charles Leclerc        (Ferrari        )   7.40%  Odds:  13.5/1  Pts: 155  Still alive: ✓
 ```
 
 ## 📊 Data Sources
 
-- **Primary**: [Ergast F1 API](http://ergast.com/mrd/) - Historical race results, standings, qualifying
-- **Coverage**: 2010-2024 F1 seasons (15 years of data)
-- **Data Points**: 3000+ driver-season records, 4000+ races analyzed
+| Source | Content | Coverage |
+|---|---|---|
+| `data/f1_championship_data.csv` | Season-level driver standings | 2020–2025 |
+| `data/f1_2026_grid.csv` | 2026 driver grid + mid-season stats | After Round 13 |
+| [F1-2026-Prediction-main](../F1-2026-Prediction-main) | Per-race FastF1 telemetry | Rounds 1–13 |
+
+The 2026 grid stats (points, wins, podiums, completion rate, avg finish) were derived from the
+`Race/13.ItalyGP/Data/ItalyGP.csv` standings file in the companion project, which uses FastF1 +
+Ergast to collect live race-by-race data.
+
+To update the 2026 data after a new race weekend, edit `data/f1_2026_grid.csv` with the latest
+standings and update `COMPLETED_ROUNDS` in `src/f1_2026_predictor.py`, then re-run the predictor.
 
 ## 🔬 Model Validation
 
-The system includes comprehensive validation:
+- **Cross-validation** — stratified 5-fold CV on training set (2020–2025)
+- **Historical backtesting** — model evaluated on held-out seasons
+- **Feature importance** — averaged across all tree-based models
+- **Calibration curves** — assess probability reliability
+- **Monte Carlo cross-check** — 3 000-simulation skill-weighted season rollout
 
-- **Cross-validation** with stratified k-folds
-- **Historical backtesting** on past seasons  
-- **Feature importance analysis** for interpretability
-- **Calibration curves** for probability accuracy
-- **Confusion matrices** and performance metrics
+## 🚧 Limitations
 
-## 🚧 Limitations & Disclaimers
+- Training set is 6 seasons × ~20 drivers ≈ 120 rows — small by ML standards
+- 2026 features are partial-season statistics, not final standings
+- New teams (Audi, Cadillac) and rookies have no prior-year lagged features — defaults to median
+- Car development, regulation clarifications, and mid-season driver changes are not modelled
+- For entertainment and analytical purposes only — not financial or betting advice
 
-- **Estimates**: 2025 predictions use estimated driver lineups and performance
-- **Regulation Changes**: New technical regulations may impact predictions
-- **External Factors**: Injuries, penalties, and race incidents not predictable
-- **Entertainment Only**: Predictions are for analysis, not betting advice
+## 🔄 Keeping the Model Current
 
-## 🔄 Future Improvements
+### Option 1: Automatic update via FastF1 (recommended)
 
-- [ ] Real-time data integration during 2025 season
-- [ ] Advanced deep learning models (LSTM, Transformers)
-- [ ] Weather and track-specific predictions
-- [ ] Driver market value and contract analysis
-- [ ] Interactive web dashboard
-- [ ] API for real-time predictions
+After each race weekend, run the incremental update script:
+
+```bash
+cd scripts
+python update_2026_standings.py
+```
+
+This script will:
+- Check what round your current `data/f1_2026_grid.csv` is updated through
+- Fetch **only new race data** from FastF1 (not re-fetching all historical races)
+- Update standings incrementally with new points, wins, podiums, and race stats
+- Automatically update `COMPLETED_ROUNDS` and `REMAINING_ROUNDS` in `f1_2026_predictor.py`
+
+Then re-run the predictor:
+
+```bash
+cd ../src
+python f1_2026_predictor.py
+```
+
+### Option 2: Manual update
+
+1. Edit `data/f1_2026_grid.csv` with new points/wins/podiums from the latest race
+2. Update `COMPLETED_ROUNDS` and `REMAINING_ROUNDS` in `src/f1_2026_predictor.py`
+3. Re-run: `python src/f1_2026_predictor.py`
+
+### Regenerate visualizations
+
+After any update:
+
+```bash
+python scripts/generate_readme_images.py
+```
+
+**Note:** The incremental update script only fetches new races after the last completed round in your CSV, making updates fast and efficient. The first time you run it, it will cache FastF1 data in `scripts/.fastf1_cache/` for even faster subsequent updates.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to:
-
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -m 'Add my feature'`)
+4. Push to the branch (`git push origin feature/my-feature`)
 5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License — see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- **Ergast API** for providing comprehensive F1 historical data
-- **Formula 1** for the exciting sport that makes this analysis possible
-- **Open Source Community** for the excellent ML libraries used in this project
+- **FastF1** for the excellent F1 telemetry library used in the companion data project
+- **Ergast API** for historical championship standings
+- **Formula 1** for the sport that makes this analysis worth doing
 
 ---
 
-Made with ❤️ for F1 fans and data science enthusiasts
-
-Last updated: October 2025
+*Made with ❤️ for F1 fans and data science enthusiasts — Last updated: September 2026*

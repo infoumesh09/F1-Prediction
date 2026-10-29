@@ -1,6 +1,7 @@
 """
 Simplified Feature Engineering Module for F1 Championship Prediction
 Works with pre-calculated championship statistics
+Updated for 2026 season
 """
 
 import pandas as pd
@@ -91,9 +92,12 @@ class F1FeatureEngineer:
         features_df['driver_experience'] = driver_experience
         
         # Store feature columns for later use
-        self.feature_columns = [col for col in features_df.columns if col not in 
-                               ['year', 'driver_id', 'driver_code', 'driver_name', 'nationality', 
-                                'constructor_id', 'constructor_name', 'is_champion']]
+        # final_position defines the target (the champion is P1), so including
+        # it would leak the answer into both validation and prediction.
+        self.feature_columns = [col for col in features_df.columns if col not in
+                               ['year', 'driver_id', 'driver_code', 'driver_name', 'nationality',
+                                'constructor_id', 'constructor_name', 'final_position',
+                                'is_champion']]
         
         logger.info(f"Created {len(self.feature_columns)} features for ML model")
         logger.info(f"Feature columns: {self.feature_columns}")
@@ -106,7 +110,7 @@ class F1FeatureEngineer:
     
     def prepare_training_data(self, features_df: pd.DataFrame) -> tuple:
         """
-        Prepare training data for ML model (exclude 2025 data)
+        Prepare training data for ML model (exclude 2026 data)
         
         Args:
             features_df: DataFrame with features
@@ -114,8 +118,8 @@ class F1FeatureEngineer:
         Returns:
             Tuple of (X, y, feature_names)
         """
-        # Filter out 2025 data for training (since it's prediction data)
-        training_df = features_df[features_df['year'] < 2025].copy()
+        # Filter out 2026 data for training (since it's prediction data)
+        training_df = features_df[features_df['year'] < 2026].copy()
         
         # Remove rows with missing target
         clean_df = training_df.dropna(subset=['is_champion'])
@@ -127,31 +131,31 @@ class F1FeatureEngineer:
         # Fill any remaining NaN values
         X = X.fillna(X.median())
         
-        logger.info(f"Training data prepared: {X.shape[0]} samples, {X.shape[1]} features (excluding 2025 data)")
+        logger.info(f"Training data prepared: {X.shape[0]} samples, {X.shape[1]} features (excluding 2026 data)")
         
         return X, y, self.feature_columns
     
     def prepare_prediction_data(self, features_df: pd.DataFrame) -> pd.DataFrame:
         """
-        Prepare prediction data for ML model (2025 data only)
+        Prepare prediction data for ML model (2026 data only)
         
         Args:
-            features_df: DataFrame with features (should include 2025 data)
+            features_df: DataFrame with features (should include 2026 data)
             
         Returns:
             DataFrame ready for prediction
         """
-        # Filter to only 2025 data for prediction
-        prediction_df = features_df[features_df['year'] == 2025].copy()
+        # Filter to only 2026 data for prediction
+        prediction_df = features_df[features_df['year'] == 2026].copy()
         
         # Get features
         X = prediction_df[self.feature_columns]
         
-        # Fill any missing values with median from training data (years < 2025)
-        training_df = features_df[features_df['year'] < 2025]
+        # Fill any missing values with median from training data (years < 2026)
+        training_df = features_df[features_df['year'] < 2026]
         training_medians = training_df[self.feature_columns].median()
         X = X.fillna(training_medians)
         
-        logger.info(f"Prediction data prepared: {X.shape[0]} samples, {X.shape[1]} features (2025 data only)")
+        logger.info(f"Prediction data prepared: {X.shape[0]} samples, {X.shape[1]} features (2026 data only)")
         
         return X

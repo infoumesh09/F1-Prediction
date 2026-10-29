@@ -1,0 +1,24 @@
+driver_name,constructor_name,championship_probability,predicted_champion,odds,confidence_level,current_points,current_wins,races_done,total_races,current_podiums,points_gap_to_leader,max_possible_points,still_mathematically_alive
+Andrea Kimi Antonelli,Mercedes,0.48762519235638,True,2.0507554073809042,Very High,302,8,15,15,12,0,527,True
+George Russell,Mercedes,0.12636007026156285,False,7.913892402323137,Medium,236,3,15,15,8,66,461,True
+Lewis Hamilton,Ferrari,0.07066242023504805,False,14.1517937918578,Medium,199,1,15,15,5,103,424,True
+Lando Norris,McLaren,0.041803435275455034,False,23.921479022255184,Low,186,2,15,15,5,116,411,True
+Charles Leclerc,Ferrari,0.04168280250333759,False,23.9907093559731,Low,179,1,15,15,4,123,404,True
+Max Verstappen,Red Bull Racing,0.03227181715415053,False,30.98678934698254,Low,163,0,15,15,7,139,388,True
+Oscar Piastri,McLaren,0.022364511849028733,False,44.713696715156736,Low,120,0,15,15,2,182,345,True
+Isack Hadjar,Red Bull Racing,0.018057171895883493,False,55.37965777619754,Low,86,0,12,12,2,216,311,True
+Liam Lawson,Racing Bulls,0.01478978370302101,False,67.61424102475121,Low,59,0,15,15,0,243,284,False
+Pierre Gasly,Alpine,0.013073078599149685,False,76.49307639480139,Low,41,0,15,15,0,261,266,False
+Arvid Lindblad,Racing Bulls,0.012030923800264739,False,83.11913670153868,Low,37,0,15,15,0,265,262,False
+Franco Colapinto,Alpine,0.011851875670326452,False,84.37483043327063,Low,27,0,15,15,0,275,252,False
+Oliver Bearman,Haas F1 Team,0.011237675145867104,False,88.98637725506521,Low,20,0,15,15,0,282,245,False
+Gabriel Bortoleto,Audi,0.010563275767739256,False,94.66760330673628,Low,10,0,15,15,0,292,235,False
+Nico Hulkenberg,Audi,0.010120129260051796,False,98.81296713742586,Low,7,0,15,15,0,295,232,False
+Esteban Ocon,Haas F1 Team,0.010110667244861331,False,98.90544073718203,Low,7,0,15,15,0,295,232,False
+Carlos Sainz,Williams,0.010110667244861331,False,98.90544073718203,Low,7,0,15,15,0,295,232,False
+Alexander Albon,Williams,0.009786888841160695,False,102.17751690346194,Low,5,0,15,15,0,297,230,False
+Fernando Alonso,Aston Martin,0.009786888841160695,False,102.17751690346194,Low,3,0,15,15,0,299,228,False
+TSU,Racing Bulls,0.008927681087672484,False,112.01116955004358,Low,1,0,3,3,0,301,226,False
+Valtteri Bottas,Cadillac,0.008927681087672484,False,112.01116955004358,Low,0,0,15,15,0,302,225,False
+Sergio Perez,Cadillac,0.008927681087672484,False,112.01116955004358,Low,0,0,15,15,0,302,225,False
+Lance Stroll,Aston Martin,0.008927681087672484,False,112.01116955004358,Low,0,0,15,15,0,302,225,False

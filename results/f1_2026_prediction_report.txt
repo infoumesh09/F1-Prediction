@@ -1,0 +1,89 @@
+====================================================================================================
+F1 2026 WORLD CHAMPIONSHIP PREDICTION REPORT
+====================================================================================================
+Generated on:      2026-09-29 23:36:22
+Prediction Model:  F1ChampionshipPredictor (Ensemble ML)
+Season Progress:   Round 15 of 24 (9 races remaining)
+Max pts remaining: 225 per driver
+
+TOP 10 CHAMPIONSHIP CONTENDERS
+--------------------------------------------------
+ 1. Andrea Kimi Antonelli  (Mercedes       )  48.76%  Odds:   2.1/1  Pts: 302  Alive: YES
+ 2. George Russell         (Mercedes       )  12.64%  Odds:   7.9/1  Pts: 236  Alive: YES
+ 3. Lewis Hamilton         (Ferrari        )   7.07%  Odds:  14.2/1  Pts: 199  Alive: YES
+ 4. Lando Norris           (McLaren        )   4.18%  Odds:  23.9/1  Pts: 186  Alive: YES
+ 5. Charles Leclerc        (Ferrari        )   4.17%  Odds:  24.0/1  Pts: 179  Alive: YES
+ 6. Max Verstappen         (Red Bull Racing)   3.23%  Odds:  31.0/1  Pts: 163  Alive: YES
+ 7. Oscar Piastri          (McLaren        )   2.24%  Odds:  44.7/1  Pts: 120  Alive: YES
+ 8. Isack Hadjar           (Red Bull Racing)   1.81%  Odds:  55.4/1  Pts:  86  Alive: YES
+ 9. Liam Lawson            (Racing Bulls   )   1.48%  Odds:  67.6/1  Pts:  59  Alive: NO
+10. Pierre Gasly           (Alpine         )   1.31%  Odds:  76.5/1  Pts:  41  Alive: NO
+
+CHAMPIONSHIP FAVOURITE ANALYSIS
+----------------------------------------
+Predicted Champion:        Andrea Kimi Antonelli
+Team:                      Mercedes
+Championship Probability:  48.8%
+Betting Odds Equivalent:   2.1/1
+Confidence Level:          Very High
+Current Points:            302
+Current Wins:              8
+Points Gap to Leader:      0
+
+MATHEMATICALLY ELIMINATED DRIVERS
+----------------------------------------
+  * Liam Lawson            (Racing Bulls)
+  * Pierre Gasly           (Alpine)
+  * Arvid Lindblad         (Racing Bulls)
+  * Franco Colapinto       (Alpine)
+  * Oliver Bearman         (Haas F1 Team)
+  * Gabriel Bortoleto      (Audi)
+  * Nico Hulkenberg        (Audi)
+  * Esteban Ocon           (Haas F1 Team)
+  * Carlos Sainz           (Williams)
+  * Alexander Albon        (Williams)
+  * Fernando Alonso        (Aston Martin)
+  * TSU                    (Racing Bulls)
+  * Valtteri Bottas        (Cadillac)
+  * Sergio Perez           (Cadillac)
+  * Lance Stroll           (Aston Martin)
+
+CONSTRUCTOR CHAMPIONSHIP OUTLOOK
+---------------------------------------------
+  Mercedes            : 61.4%
+  Ferrari             : 11.2%
+  McLaren             : 6.4%
+  Red Bull Racing     : 5.0%
+  Racing Bulls        : 3.6%
+  Alpine              : 2.5%
+  Haas F1 Team        : 2.1%
+  Audi                : 2.1%
+
+MODEL PERFORMANCE SUMMARY
+-----------------------------------
+  Model Accuracy:  100.0%
+  Precision:       100.0%
+  Recall:          100.0%
+  F1-Score:        100.0%
+  AUC-ROC:         1.000
+  Training Data:   (56, 33)
+
+KEY INSIGHTS & FACTORS
+------------------------------
+* Strong favourite detected — championship battle may already be decided
+* One team shows clear dominance in championship odds
+* 9 races remain; max 225 points still on offer
+
+IMPORTANT DISCLAIMERS
+-------------------------
+* Predictions are based on historical data (2020-2025) and current 2026 season stats
+* 2026 season data reflects standings after Round 15 (Italy GP)
+* Actual results may vary due to:
+  - Car development trajectories and regulation interpretations
+  - Driver form, team orders, and strategic decisions
+  - Injuries, penalties, retirements, and race incidents
+  - Weather conditions and circuit-specific performance
+* Model will be updated as 2026 season data becomes available
+
+For entertainment and analytical purposes only — not financial advice!
+====================================================================================================
